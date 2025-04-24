@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Equipment Sales Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Check if user is logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = localStorage.getItem('userData');
+            const userId = localStorage.getItem('userId');
+            
+            if (!userData && !userId) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            try {
+                // Update user name in the dashboard
+                let userName = 'User';
+                
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    userName = user.name || 'User';
+                } else if (userId) {
+                    // If we only have userId but not userData, display a generic name
+                    userName = localStorage.getItem('userEmail') || 'User';
+                }
+                
+                // Update the user name in the UI
+                const userNameElement = document.querySelector('.user-name');
+                if (userNameElement) {
+                    userNameElement.textContent = userName;
+                }
+            } catch (e) {
+                console.error('Error parsing user data:', e);
+                // Don't redirect in case of parse error, just show generic name
+                const userNameElement = document.querySelector('.user-name');
+                if (userNameElement) {
+                    userNameElement.textContent = 'User';
+                }
+            }
+        });
+        
+        // Logout function
+        function logout() {
+            localStorage.removeItem('userData');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userEmail');
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <img src="logo.svg" alt="Logo">
+                <h1>QUANTUM</h1>
+            </div>
+            <div class="menu-section">
+                <h3>MAIN</h3>
+                <ul class="menu">
+                    <li class="active"><a href="#"><span class="icon">📊</span> Dashboard</a></li>
+                    <li><a href="#"><span class="icon">📈</span> Statistics</a></li>
+                    <li><a href="#"><span class="icon">🔒</span> Access Control</a></li>
+                    <li><a href="#"><span class="icon">💬</span> Chat</a></li>
+                    <li><a href="users.html"><span class="icon">👥</span> User Management</a></li>
+                </ul>
+            </div>
+            <div class="menu-section">
+                <h3>EQUIPMENT DATA</h3>
+                <ul class="menu">
+                    <li><a href="#"><span class="icon">📋</span> Inventory</a></li>
+                    <li><a href="products.html"><span class="icon">🎛️</span> Products</a></li>
+                    <li><a href="#"><span class="icon">🎵</span> Microphones</a></li>
+                    <li><a href="#"><span class="icon">📻</span> Transmitters</a></li>
+                    <li><a href="#"><span class="icon">🎧</span> Headphones</a></li>
+                    <li><a href="#"><span class="icon">🔊</span> Speakers</a></li>
+                </ul>
+            </div>
+            <div class="menu-section">
+                <h3>SALES DATA</h3>
+                <ul class="menu">
+                    <li><a href="#"><span class="icon">💰</span> Transactions</a></li>
+                    <li><a href="#"><span class="icon">🧾</span> Invoices</a></li>
+                    <li><a href="#"><span class="icon">👥</span> Customers</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="theme-toggle">
+                    <span class="icon">🌙</span>
+                </div>
+                <div class="user-info">
+                    <span class="lang">🇺🇸 English</span>
+                    <span class="user-name">Admin User</span>
+                    <button class="website-btn">Website</button>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>Microphones</h2>
+                    <p class="count">24</p>
+                    <a href="#" class="more">▶</a>
+                </div>
+                <div class="card">
+                    <h2>Transmitters</h2>
+                    <p class="count">12</p>
+                    <a href="#" class="more">▶</a>
+                </div>
+                <div class="card">
+                    <h2>Headphones</h2>
+                    <p class="count">36</p>
+                    <a href="#" class="more">▶</a>
+                </div>
+                <div class="card">
+                    <h2>Speakers</h2>
+                    <p class="count">18</p>
+                    <a href="#" class="more">▶</a>
+                </div>
+                <div class="card">
+                    <h2>Cables</h2>
+                    <p class="count">124</p>
+                    <a href="#" class="more">▶</a>
+                </div>
+                <div class="card">
+                    <h2>Accessories</h2>
+                    <p class="count">87</p>
+                    <a href="#" class="more">▶</a>
+                </div>
+                <div class="wide-card">
+                    <h2>Sales for the last 7 Days</h2>
+                    <div class="chart-container">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>Equipment by Type</h2>
+                    <div class="chart-container">
+                        <canvas id="equipmentTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 

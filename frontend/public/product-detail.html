@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Radio Equipment Sales Dashboard</title>
+    <link rel="stylesheet" href="/styles.css">  <!-- Assuming CSS files are in public root -->
+    <link rel="stylesheet" href="/products.css"> <!-- Assuming CSS files are in public root -->
+    <link rel="stylesheet" href="/product-detail.css"> <!-- Assuming CSS files are in public root -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Check if user is logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            // TODO: Replace localStorage check with your actual authentication check
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                // TODO: Adjust redirect path if login page is different
+                window.location.href = '/login.html'; 
+                return;
+            }
+            
+            // Update user name in the dashboard
+            // TODO: Update this selector and logic based on your actual user data storage
+            const user = JSON.parse(userData);
+            document.querySelector('.user-name').textContent = user.name || 'User';
+            
+            // Get product ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = parseInt(urlParams.get('id'));
+
+            if (isNaN(productId)) {
+                console.error("Invalid or missing product ID in URL");
+                // TODO: Handle invalid/missing product ID (e.g., show error message, redirect)
+                return; 
+            }
+            
+            // Load product detail
+            loadProductDetail(productId);
+        });
+        
+        // Logout function
+        function logout() {
+            // TODO: Implement your actual logout logic (clear session/token, redirect)
+            localStorage.removeItem('userData');
+            window.location.href = '/login.html'; // TODO: Adjust redirect path
+        }
+        
+        // TODO: Replace this sample data with fetching from your backend API
+        const productsData = [
+             {
+                id: 1,
+                name: "Studio Pro Microphone XR-200",
+                description: "Professional studio microphone with ultra-clear audio capture and noise cancellation. Perfect for recording vocals, podcasts, and instruments with exceptional clarity and detail. Features a cardioid polar pattern to minimize background noise and focus on the sound source.",
+                price: 299.99,
+                category: "Microphones",
+                stock: 15,
+                image: "https://placehold.co/600x400?text=Microphone", // TODO: Use actual image paths
+                features: [
+                    "Ultra-clear audio capture",
+                    "Built-in noise cancellation",
+                    "Cardioid polar pattern",
+                    "Frequency response: 20Hz-20kHz",
+                    "Includes shock mount and pop filter",
+                    "USB and XLR connectivity options"
+                ],
+                specifications: {
+                    "Type": "Large diaphragm condenser microphone",
+                    "Frequency Response": "20Hz - 20kHz",
+                    "Sensitivity": "-36dB (0dB=1V/Pa @ 1kHz)",
+                    "Signal-to-Noise Ratio": ">78dB",
+                    "Dimensions": "50mm × 200mm",
+                    "Weight": "380g",
+                    "Connector": "3-pin XLR, USB-C",
+                    "Power Requirements": "48V phantom power or USB"
+                },
+                relatedProducts: [5, 6, 7] // TODO: Use actual related product IDs
+            },
+            // ... other sample products omitted for brevity ...
+             {
+                id: 8,
+                name: "Professional XLR Cable Set",
+                description: "Set of 5 high-quality XLR cables in various lengths (1m, 2m, 3m, 5m, 10m). Gold-plated connectors and oxygen-free copper ensure optimal signal transfer with minimal noise and interference.",
+                price: 89.99,
+                category: "Cables",
+                stock: 40,
+                image: "https://placehold.co/600x400?text=XLR+Cables", // TODO: Use actual image paths
+                features: [
+                    "Set of 5 cables in different lengths",
+                    "Gold-plated connectors",
+                    "Oxygen-free copper",
+                    "Braided shielding",
+                    "Color-coded lengths",
+                    "Carrying case included"
+                ],
+                specifications: {
+                    "Cable Type": "Balanced XLR",
+                    "Conductor": "24 AWG oxygen-free copper",
+                    "Connector": "Gold-plated XLR3M to XLR3F",
+                    "Shielding": "95% copper braided",
+                    "Lengths Included": "1m, 2m, 3m, 5m, 10m",
+                    "Outer Diameter": "6mm",
+                    "Resistance": "<8.5 ohms/100m",
+                    "Weight": "650g (full set)"
+                },
+                relatedProducts: [1, 2, 7] // TODO: Use actual related product IDs
+            }
+        ];
+        
+        // Load product detail
+        // TODO: Modify this function to fetch product data from your API using productId
+        async function loadProductDetail(productId) {
+            // --- Start: Replace with API call ---
+            const product = productsData.find(p => p.id === productId);
+            // --- End: Replace with API call ---
+
+            if (!product) {
+                console.error(`Product with ID ${productId} not found.`);
+                // TODO: Handle product not found (e.g., show error message)
+                // For now, load the first product as a fallback (remove this in production)
+                const fallbackProduct = productsData[0]; 
+                if (!fallbackProduct) return; // No products available at all
+                // Re-assign product to fallback for display purposes
+                Object.assign(product, fallbackProduct);
+            }
+
+            // Update page title
+            document.title = `${product.name} - Radio Equipment Sales Dashboard`;
+            
+            // Update product details
+            document.getElementById('productTitle').textContent = product.name;
+            document.getElementById('productImage').src = product.image; // TODO: Adjust path if necessary
+            document.getElementById('productImage').alt = product.name;
+            document.getElementById('productCategory').textContent = product.category;
+            document.getElementById('productDescription').textContent = product.description;
+            document.getElementById('productPrice').textContent = `$${product.price.toFixed(2)}`;
+            document.getElementById('productStock').textContent = `${product.stock} in stock`;
+            
+            // Update features list
+            const featuresList = document.getElementById('featuresList');
+            featuresList.innerHTML = '';
+            product.features.forEach(feature => {
+                const li = document.createElement('li');
+                li.textContent = feature;
+                featuresList.appendChild(li);
+            });
+            
+            // Update specifications table
+            const specTable = document.getElementById('specificationsTable');
+            specTable.innerHTML = '';
+            for (const [key, value] of Object.entries(product.specifications)) {
+                const row = document.createElement('tr');
+                const keyCell = document.createElement('td');
+                keyCell.textContent = key;
+                const valueCell = document.createElement('td');
+                valueCell.textContent = value;
+                row.appendChild(keyCell);
+                row.appendChild(valueCell);
+                specTable.appendChild(row);
+            }
+            
+            // Update related products
+            // TODO: Fetch related product details if necessary
+            const relatedContainer = document.getElementById('relatedProducts');
+            relatedContainer.innerHTML = '';
+            product.relatedProducts.forEach(relatedId => {
+                 // --- Start: Replace with API call or use pre-fetched data ---
+                const relatedProduct = productsData.find(p => p.id === relatedId);
+                // --- End: Replace with API call or use pre-fetched data ---
+                
+                if (relatedProduct) {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'related-product-card';
+                    productCard.innerHTML = `
+                        <div class="product-image">
+                            <img src="${relatedProduct.image}" alt="${relatedProduct.name}"> <!-- TODO: Adjust path -->
+                            <span class="product-category">${relatedProduct.category}</span>
+                        </div>
+                        <div class="product-info">
+                            <h3>${relatedProduct.name}</h3>
+                            <div class="product-price">$${relatedProduct.price.toFixed(2)}</div>
+                             <!-- Link to the detail page for the related product -->
+                            <a href="/product-detail.html?id=${relatedProduct.id}" class="view-product-btn">View Details</a>
+                        </div>
+                    `;
+                    relatedContainer.appendChild(productCard);
+                }
+            });
+
+            // Update Add to Cart button to use the current product ID
+            const addToCartButton = document.querySelector('.add-to-cart-btn');
+             if (addToCartButton) {
+                addToCartButton.onclick = () => addToCart(product.id, document.getElementById('quantity').value);
+            }
+        }
+        
+        // Add to cart functionality
+        // TODO: Replace alert with your actual cart implementation (e.g., API call, update state)
+        function addToCart(productId, quantity) {
+            quantity = parseInt(quantity) || 1;
+            if (quantity < 1) quantity = 1;
+            
+            // TODO: Replace with actual product data fetching if needed, or use data loaded in loadProductDetail
+            const product = productsData.find(p => p.id === productId); 
+            if (product) {
+                 // TODO: Replace this alert with your actual add-to-cart logic
+                alert(`Added ${quantity} ${product.name} to your cart!`);
+                // Example: callAPI('/cart/add', { productId, quantity });
+            } else {
+                console.error(`Product with ID ${productId} not found for cart addition.`);
+                // TODO: Handle error (e.g., show message to user)
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- TODO: Integrate this structure into your main layout/component system if applicable -->
+    <div class="container">
+        <div class="sidebar">
+             <!-- TODO: Replace logo path if necessary -->
+            <div class="logo">
+                <img src="/logo.svg" alt="Logo"> 
+                <h1>QUANTUM</h1>
+            </div>
+            <!-- TODO: Update menu links to match your application's routing -->
+            <div class="menu-section">
+                <h3>MAIN</h3>
+                <ul class="menu">
+                    <li><a href="/index.html"><span class="icon">📊</span> Dashboard</a></li> 
+                    <li><a href="#"><span class="icon">📈</span> Statistics</a></li>
+                    <li><a href="#"><span class="icon">🔒</span> Access Control</a></li>
+                    <li><a href="#"><span class="icon">💬</span> Chat</a></li>
+                     <li><a href="/users.html"><span class="icon">👥</span> User Management</a></li> 
+                </ul>
+            </div>
+            <div class="menu-section">
+                <h3>EQUIPMENT DATA</h3>
+                <ul class="menu">
+                    <li><a href="#"><span class="icon">📋</span> Inventory</a></li>
+                    <!-- Update the active class based on the current page -->
+                     <li class="active"><a href="/products.html"><span class="icon">🎛️</span> Products</a></li> 
+                    <li><a href="#"><span class="icon">🎵</span> Microphones</a></li>
+                    <li><a href="#"><span class="icon">📻</span> Transmitters</a></li>
+                    <li><a href="#"><span class="icon">🎧</span> Headphones</a></li>
+                    <li><a href="#"><span class="icon">🔊</span> Speakers</a></li>
+                </ul>
+            </div>
+            <div class="menu-section">
+                <h3>SALES DATA</h3>
+                <ul class="menu">
+                    <li><a href="#"><span class="icon">💰</span> Transactions</a></li>
+                    <li><a href="#"><span class="icon">🧾</span> Invoices</a></li>
+                    <li><a href="#"><span class="icon">👥</span> Customers</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="top-bar">
+                 <!-- TODO: Update breadcrumb links -->
+                <div class="breadcrumbs">
+                    <a href="/index.html">Dashboard</a> &gt; 
+                    <a href="/products.html">Products</a> &gt;
+                    <span id="productTitle">Product Name</span> 
+                </div>
+                 <!-- TODO: Update user info display logic -->
+                <div class="user-info">
+                    <span class="lang">🇺🇸 English</span>
+                    <span class="user-name">Admin User</span> 
+                    <button class="website-btn">Website</button>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            
+            <div class="product-detail-container">
+                <div class="product-detail-left">
+                    <div class="product-detail-image">
+                        <img id="productImage" src="" alt="Product Image">
+                        <span id="productCategory" class="product-category">Category</span>
+                    </div>
+                </div>
+                <div class="product-detail-right">
+                    <h1 id="productTitle">Product Name</h1>
+                    <p id="productDescription" class="product-description">Product description goes here.</p>
+                    
+                    <div class="product-detail-price-row">
+                        <div id="productPrice" class="product-price">$0.00</div>
+                        <div id="productStock" class="product-stock">0 in stock</div>
+                    </div>
+                    
+                    <div class="quantity-container">
+                        <label for="quantity">Quantity:</label>
+                        <div class="quantity-input">
+                            <button type="button" onclick="this.nextElementSibling.stepDown()">-</button>
+                            <input type="number" id="quantity" min="1" value="1">
+                            <button type="button" onclick="this.previousElementSibling.stepUp()">+</button>
+                        </div>
+                    </div>
+                    
+                    <button class="add-to-cart-btn"> <!-- onclick handler is now set dynamically -->
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+            
+            <div class="product-tabs">
+                <div class="tab-header">
+                    <div class="tab-button active" data-tab="features">Features</div>
+                    <div class="tab-button" data-tab="specifications">Specifications</div>
+                    <div class="tab-button" data-tab="related">Related Products</div>
+                </div>
+                
+                <div class="tab-content">
+                    <div id="features" class="tab-pane active">
+                        <h2>Key Features</h2>
+                        <ul id="featuresList" class="features-list">
+                            <!-- Features will be added by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div id="specifications" class="tab-pane">
+                        <h2>Technical Specifications</h2>
+                        <table class="specifications-table">
+                            <tbody id="specificationsTable">
+                                <!-- Specifications will be added by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="related" class="tab-pane">
+                        <h2>Related Products</h2>
+                        <div id="relatedProducts" class="related-products-grid">
+                            <!-- Related products will be added by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality (should be safe to keep as is)
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and panes
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+                    
+                    // Add active class to current button and pane
+                    this.classList.add('active');
+                    const paneElement = document.getElementById(tabId);
+                    if (paneElement) { // Check if pane exists before adding class
+                        paneElement.classList.add('active');
+                    }
+                });
+            });
+
+            // Ensure the initial product load happens after tab setup
+             // NOTE: The main product loading logic is already in a DOMContentLoaded listener
+             // at the top of the <script> block. This second listener for tabs is fine.
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <!-- This is a simplified placeholder for the illustration in your image -->
+  <!-- Background elements -->
+  <circle cx="150" cy="120" r="100" fill="#1b2a4e" opacity="0.3" />
+  <path d="M750,100 Q670,250 550,350" stroke="#4056b8" stroke-width="20" opacity="0.2" fill="none" />
+  <path d="M600,300 L650,350 L700,300" stroke="#4056b8" stroke-width="20" opacity="0.2" fill="none" />
+
+  <!-- Screen with charts -->
+  <rect x="50" y="30" width="500" height="300" rx="20" ry="20" fill="#c9f0ff" stroke="#ffffff" stroke-width="10" />
+  
+  <!-- Left chart -->
+  <rect x="80" y="60" width="150" height="100" rx="10" ry="10" fill="#ffffff" />
+  <circle cx="105" cy="85" r="15" fill="#7952b3" />
+  <line x1="130" y1="85" x2="150" y2="85" stroke="#7952b3" stroke-width="3" />
+  <path d="M105,120 Q130,90 160,130" stroke="#7952b3" stroke-width="3" fill="none" />
+  
+  <!-- Person data -->
+  <rect x="80" y="180" width="150" height="100" rx="10" ry="10" fill="#ffffff" />
+  <line x1="100" y1="200" x2="140" y2="200" stroke="#73e7e7" stroke-width="3" />
+  <line x1="100" y1="215" x2="160" y2="215" stroke="#73e7e7" stroke-width="3" />
+  
+  <!-- Bar chart -->
+  <rect x="250" y="60" width="270" height="220" rx="10" ry="10" fill="#ffffff" />
+  <line x1="280" y1="90" x2="450" y2="90" stroke="#7952b3" stroke-width="5" />
+  <rect x="280" y="120" width="20" height="120" fill="#e0d4ff" />
+  <rect x="280" y="180" width="20" height="60" fill="#7952b3" />
+  
+  <rect x="310" y="120" width="20" height="120" fill="#e0d4ff" />
+  <rect x="310" y="170" width="20" height="70" fill="#7952b3" />
+  
+  <rect x="340" y="120" width="20" height="120" fill="#e0d4ff" />
+  <rect x="340" y="150" width="20" height="90" fill="#7952b3" />
+  
+  <rect x="370" y="120" width="20" height="120" fill="#e0d4ff" />
+  <rect x="370" y="140" width="20" height="100" fill="#7952b3" />
+  
+  <rect x="400" y="120" width="20" height="120" fill="#e0d4ff" />
+  <rect x="400" y="160" width="20" height="80" fill="#7952b3" />
+  
+  <rect x="430" y="120" width="20" height="120" fill="#e0d4ff" />
+  <rect x="430" y="180" width="20" height="60" fill="#7952b3" />
+  
+  <rect x="460" y="120" width="20" height="120" fill="#e0d4ff" />
+  <rect x="460" y="145" width="20" height="95" fill="#7952b3" />
+  
+  <!-- Table and people -->
+  <rect x="150" y="350" width="320" height="10" fill="#ffffff" rx="5" ry="5" />
+  <rect x="150" y="360" width="320" height="30" fill="#f5f5f5" rx="5" ry="5" />
+  
+  <!-- Presenter -->
+  <rect x="250" y="270" width="20" height="50" fill="#6547d8" />
+  <circle cx="260" cy="250" r="20" fill="#a590ff" />
+  <rect x="245" y="270" width="30" height="20" fill="#6547d8" />
+  
+  <!-- Person 1 -->
+  <rect x="180" y="300" width="20" height="50" fill="#ff5252" />
+  <circle cx="190" cy="285" r="15" fill="#333333" />
+  
+  <!-- Person 2 -->
+  <rect x="240" y="320" width="20" height="30" fill="#ff9800" />
+  <circle cx="250" cy="305" r="15" fill="#ff8800" />
+  
+  <!-- Person 3 -->
+  <rect x="320" y="320" width="20" height="30" fill="#673ab7" />
+  <circle cx="330" cy="305" r="15" fill="#a590ff" />
+  
+  <!-- Person 4 -->
+  <rect x="380" y="320" width="20" height="30" fill="#ff4081" />
+  <circle cx="390" cy="305" r="15" fill="#ffc0cb" />
+  
+  <!-- Plant -->
+  <rect x="80" y="340" width="20" height="50" fill="#9c27b0" />
+  <path d="M70,330 Q90,300 110,330" stroke="#00e676" stroke-width="5" fill="none" />
+  <path d="M75,340 Q90,320 105,340" stroke="#00e676" stroke-width="5" fill="none" />
+  <path d="M80,350 Q90,335 100,350" stroke="#00e676" stroke-width="5" fill="none" />
+</svg> 

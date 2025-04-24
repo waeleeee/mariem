@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Radio Equipment Sales Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #7952b3;
+            --secondary-color: #5941a9;
+            --bg-color: #1e2130;
+            --card-bg: #2a2e43;
+            --text-color: #ffffff;
+            --border-color: #3d4157;
+            --input-bg: #23273a;
+            --input-text: #a8b1d1;
+            --button-bg: #7c5dfa;
+            --button-hover: #9277ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .register-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-container input[type="password"] {
+            padding-right: 40px;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #a0a0a0;
+        }
+        
+        .strength-bars {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            flex: 1;
+            background-color: var(--border-color);
+            border-radius: 2px;
+        }
+        
+        .strength-text {
+            font-size: 14px;
+            color: #a0a0a0;
+            margin-top: 6px;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+        }
+        
+        .checkbox-label {
+            font-size: 14px;
+        }
+        
+        .checkbox-label a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+        
+        .create-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        
+        .create-btn:hover {
+            background-color: var(--button-hover);
+        }
+        
+        .login-link {
+            text-align: center;
+            font-size: 14px;
+            color: #a0a0a0;
+        }
+        
+        .login-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>Create your account ✨</h1>
+        <p class="subtitle">Join Quantum and start managing your radio equipment</p>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="yourname@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6">
+                    <button type="button" id="togglePassword" class="toggle-password">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#a0a0a0">
+                            <path d="M12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9C2.121 6.88 6.608 3 12 3zm0 16c3.691 0 6.915-2.534 7.736-6C18.915 9.534 15.691 7 12 7c-3.691 0-6.915 2.534-7.736 6 .82 3.466 4.045 6 7.736 6zm0-10c2.21 0 4 1.791 4 4s-1.79 4-4 4-4-1.791-4-4 1.79-4 4-4zm0 2c-1.105 0-2 .895-2 2s.895 2 2 2 2-.895 2-2-.895-2-2-2z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="strength-bars">
+                    <div class="strength-bar"></div>
+                    <div class="strength-bar"></div>
+                    <div class="strength-bar"></div>
+                    <div class="strength-bar"></div>
+                </div>
+                <div class="strength-text">Password strength</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="password-container">
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required minlength="6">
+                    <button type="button" id="toggleConfirmPassword" class="toggle-password">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#a0a0a0">
+                            <path d="M12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9C2.121 6.88 6.608 3 12 3zm0 16c3.691 0 6.915-2.534 7.736-6C18.915 9.534 15.691 7 12 7c-3.691 0-6.915 2.534-7.736 6 .82 3.466 4.045 6 7.736 6zm0-10c2.21 0 4 1.791 4 4s-1.79 4-4 4-4-1.791-4-4 1.79-4 4-4zm0 2c-1.105 0-2 .895-2 2s.895 2 2 2 2-.895 2-2-.895-2-2-2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="termsAgreement" name="termsAgreement" required>
+                <label for="termsAgreement" class="checkbox-label">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+            </div>
+            
+            <button type="submit" class="create-btn">Create Account</button>
+            
+            <div class="login-link">
+                <p>Already have an account?</p>
+                <a href="login.html" class="login-btn">Sign In</a>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Password visibility toggle
+            setupPasswordToggle('password', 'togglePassword');
+            setupPasswordToggle('confirmPassword', 'toggleConfirmPassword');
+            
+            // Password strength meter
+            const passwordInput = document.getElementById('password');
+            passwordInput.addEventListener('input', updatePasswordStrength);
+            
+            // Form submission
+            const registerForm = document.getElementById('registerForm');
+            registerForm.addEventListener('submit', handleRegistration);
+            
+            function setupPasswordToggle(inputId, toggleId) {
+                const passwordInput = document.getElementById(inputId);
+                const toggleButton = document.getElementById(toggleId);
+                
+                if (toggleButton && passwordInput) {
+                    toggleButton.addEventListener('click', function() {
+                        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                        passwordInput.setAttribute('type', type);
+                    });
+                }
+            }
+            
+            function updatePasswordStrength() {
+                const password = passwordInput.value;
+                const strengthBars = document.querySelectorAll('.strength-bar');
+                const strengthText = document.querySelector('.strength-text');
+                
+                // Reset all bars
+                strengthBars.forEach(bar => {
+                    bar.style.backgroundColor = '';
+                });
+                
+                if (!password) {
+                    strengthText.textContent = 'Password strength';
+                    return;
+                }
+                
+                // Calculate password strength
+                let strength = 0;
+                
+                // Length check
+                if (password.length >= 8) {
+                    strength += 1;
+                }
+                
+                // Complexity checks
+                if (/[A-Z]/.test(password)) strength += 1;  // Has uppercase
+                if (/[a-z]/.test(password)) strength += 1;  // Has lowercase
+                if (/[0-9]/.test(password)) strength += 1;  // Has number
+                if (/[^A-Za-z0-9]/.test(password)) strength += 1;  // Has special char
+                
+                // Update UI based on strength
+                let strengthLevel = '';
+                
+                if (password.length < 6) {
+                    // Too short, minimum requirement not met
+                    strengthLevel = 'Too short';
+                    strengthBars[0].style.backgroundColor = '#dc3545';
+                } else if (strength <= 2) {
+                    strengthLevel = 'Weak';
+                    strengthBars[0].style.backgroundColor = '#dc3545';
+                    strengthBars[1].style.backgroundColor = '#dc3545';
+                } else if (strength <= 3) {
+                    strengthLevel = 'Medium';
+                    strengthBars[0].style.backgroundColor = '#ffc107';
+                    strengthBars[1].style.backgroundColor = '#ffc107';
+                    strengthBars[2].style.backgroundColor = '#ffc107';
+                } else if (strength <= 4) {
+                    strengthLevel = 'Strong';
+                    strengthBars[0].style.backgroundColor = '#28a745';
+                    strengthBars[1].style.backgroundColor = '#28a745';
+                    strengthBars[2].style.backgroundColor = '#28a745';
+                    strengthBars[3].style.backgroundColor = '#28a745';
+                } else {
+                    strengthLevel = 'Very strong';
+                    strengthBars.forEach(bar => {
+                        bar.style.backgroundColor = '#198754';
+                    });
+                }
+                
+                strengthText.textContent = strengthLevel;
+            }
+            
+            function handleRegistration(e) {
+                e.preventDefault();
+                
+                const fullNameInput = document.getElementById('fullName');
+                const emailInput = document.getElementById('email');
+                const confirmPasswordInput = document.getElementById('confirmPassword');
+                const termsCheckbox = document.getElementById('termsAgreement');
+                
+                // Validate form
+                const name = fullNameInput.value.trim();
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                
+                // Basic validation
+                if (!name || !email || !password || !confirmPassword) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    alert('Password must be at least 6 characters long');
+                    return;
+                }
+                
+                if (!termsCheckbox.checked) {
+                    alert('You must agree to the Terms of Service and Privacy Policy');
+                    return;
+                }
+                
+                // Disable the submit button
+                const submitBtn = registerForm.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating account...';
+                
+                // Create user in Firebase
+                firebase.auth().createUserWithEmailAndPassword(email, password)
+                    .then(userCredential => {
+                        // User created successfully
+                        const user = userCredential.user;
+                        
+                        // Add user details to Realtime Database
+                        return firebase.database().ref('users/' + user.uid).set({
+                            name: name,
+                            email: email,
+                            role: 'user', // Default role
+                            createdAt: new Date().toISOString()
+                        });
+                    })
+                    .then(() => {
+                        // Registration successful - redirect to login
+                        alert('Account created successfully! You can now log in.');
+                        window.location.href = 'login.html';
+                    })
+                    .catch(error => {
+                        // Handle errors
+                        console.error('Registration error:', error);
+                        let errorMessage = 'Failed to create account. Please try again.';
+                        
+                        if (error.code === 'auth/email-already-in-use') {
+                            errorMessage = 'This email is already in use. Please use a different email or try logging in.';
+                        } else if (error.code === 'auth/invalid-email') {
+                            errorMessage = 'Please enter a valid email address.';
+                        } else if (error.code === 'auth/weak-password') {
+                            errorMessage = 'Password is too weak. Please choose a stronger password.';
+                        }
+                        
+                        alert(errorMessage);
+                        
+                        // Re-enable the button
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Create Account';
+                    });
+            }
+        });
+    </script>
+</body>
+</html> 

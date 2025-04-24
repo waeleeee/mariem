@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Radio Equipment Sales Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="products.css">
+    <link rel="stylesheet" href="product-detail.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Check if user is logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Update user name in the dashboard
+            const user = JSON.parse(userData);
+            document.querySelector('.user-name').textContent = user.name || 'User';
+            
+            // Get product ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = parseInt(urlParams.get('id'));
+
+            if (isNaN(productId)) {
+                console.error("Invalid or missing product ID in URL");
+                return; 
+            }
+            
+            // Load product detail
+            loadProductDetail(productId);
+        });
+        
+        // Logout function
+        function logout() {
+            localStorage.removeItem('userData');
+            window.location.href = 'login.html';
+        }
+        
+        // Sample products data
+        const productsData = [
+            {
+                id: 1,
+                name: "Studio Pro Microphone XR-200",
+                description: "Professional studio microphone with ultra-clear audio capture and noise cancellation. Perfect for recording vocals, podcasts, and instruments with exceptional clarity and detail. Features a cardioid polar pattern to minimize background noise and focus on the sound source.",
+                price: 299.99,
+                category: "Microphones",
+                stock: 15,
+                image: "https://placehold.co/600x400?text=Microphone",
+                features: [
+                    "Ultra-clear audio capture",
+                    "Built-in noise cancellation",
+                    "Cardioid polar pattern",
+                    "Frequency response: 20Hz-20kHz",
+                    "Includes shock mount and pop filter",
+                    "USB and XLR connectivity options"
+                ],
+                specifications: {
+                    "Type": "Large diaphragm condenser microphone",
+                    "Frequency Response": "20Hz - 20kHz",
+                    "Sensitivity": "-36dB (0dB=1V/Pa @ 1kHz)",
+                    "Signal-to-Noise Ratio": ">78dB",
+                    "Dimensions": "50mm × 200mm",
+                    "Weight": "380g",
+                    "Connector": "3-pin XLR, USB-C",
+                    "Power Requirements": "48V phantom power or USB"
+                },
+                relatedProducts: [5, 6, 7]
+            },
+            {
+                id: 2,
+                name: "Wireless Transmitter TR-500",
+                description: "Long-range wireless transmitter with crystal clear signal up to 500 meters. Ideal for remote broadcasting and field recording in demanding environments. Features advanced encryption for secure transmission and minimal latency.",
+                price: 449.99,
+                category: "Transmitters",
+                stock: 8,
+                image: "https://placehold.co/600x400?text=Transmitter",
+                features: [
+                    "500m range in optimal conditions",
+                    "128-bit encryption",
+                    "Low latency (<4ms)",
+                    "Battery life: 8+ hours",
+                    "Multiple frequency bands",
+                    "LCD display with status indicators"
+                ],
+                specifications: {
+                    "Frequency Range": "570-608MHz",
+                    "RF Output Power": "30mW",
+                    "Frequency Response": "40Hz - 15kHz",
+                    "THD": "<0.5%",
+                    "Battery": "Rechargeable Li-ion, 3000mAh",
+                    "Operating Time": "8-10 hours",
+                    "Dimensions": "65mm × 100mm × 25mm",
+                    "Weight": "160g"
+                },
+                relatedProducts: [4, 7, 8]
+            },
+            {
+                id: 3,
+                name: "Premium Studio Headphones H-100",
+                description: "Over-ear studio headphones with noise isolation and enhanced bass response. Designed for professional monitoring during recording and mixing sessions. Features memory foam ear cushions for extended comfort during long sessions.",
+                price: 199.99,
+                category: "Headphones",
+                stock: 22,
+                image: "https://placehold.co/600x400?text=Headphones",
+                features: [
+                    "Closed-back design for isolation",
+                    "50mm dynamic drivers",
+                    "Memory foam ear cushions",
+                    "Detachable cable system",
+                    "Foldable design for portability",
+                    "Included carrying case"
+                ],
+                specifications: {
+                    "Type": "Over-ear, closed-back",
+                    "Driver Size": "50mm",
+                    "Frequency Response": "5Hz - 40kHz",
+                    "Impedance": "38 ohms",
+                    "Sensitivity": "102dB/mW",
+                    "Cable Length": "3m (detachable)",
+                    "Connector": "3.5mm with 6.35mm adapter",
+                    "Weight": "320g"
+                },
+                relatedProducts: [4, 6, 7]
+            },
+            {
+                id: 4,
+                name: "Bluetooth Speaker System BS-50",
+                description: "Portable Bluetooth speaker with 50W output and 12-hour battery life. Perfect for remote locations and outdoor events. Features water resistance and shock-proof exterior for durability in any environment.",
+                price: 129.99,
+                category: "Speakers",
+                stock: 30,
+                image: "https://placehold.co/600x400?text=Speaker",
+                features: [
+                    "50W output power",
+                    "12-hour battery life",
+                    "Bluetooth 5.0 connectivity",
+                    "IPX7 water resistance",
+                    "Built-in microphone for calls",
+                    "Stereo pairing capability"
+                ],
+                specifications: {
+                    "Output Power": "50W (2 × 25W)",
+                    "Frequency Response": "60Hz - 20kHz",
+                    "Battery": "Rechargeable Li-ion, 5000mAh",
+                    "Bluetooth Version": "5.0",
+                    "Range": "Up to 30m",
+                    "Charging Time": "3 hours",
+                    "Dimensions": "225mm × 90mm × 90mm",
+                    "Weight": "950g"
+                },
+                relatedProducts: [3, 7, 8]
+            },
+            {
+                id: 5,
+                name: "Condenser Microphone CM-100",
+                description: "Sensitive condenser microphone perfect for vocal and acoustic recordings. Ideal for home studios and professional recording environments. Features an integrated shock mount to minimize handling noise.",
+                price: 179.99,
+                category: "Microphones",
+                stock: 12,
+                image: "https://placehold.co/600x400?text=Condenser+Mic",
+                features: [
+                    "Large diaphragm design",
+                    "Cardioid pattern",
+                    "Integrated shock mount",
+                    "Gold-plated XLR output",
+                    "Aluminum carrying case",
+                    "48V phantom power required"
+                ],
+                specifications: {
+                    "Capsule": "1-inch gold-sputtered diaphragm",
+                    "Frequency Response": "30Hz - 18kHz",
+                    "Sensitivity": "-35dB (0dB=1V/Pa @ 1kHz)",
+                    "Maximum SPL": "136dB SPL",
+                    "Self Noise": "16dB-A",
+                    "Dimensions": "50mm × 185mm",
+                    "Weight": "450g"
+                },
+                relatedProducts: [1, 6, 7]
+            },
+            {
+                id: 6,
+                name: "Wireless Lavalier Microphone Set",
+                description: "Clip-on wireless microphone system ideal for presentations and interviews. Features dual-channel receivers for capturing two audio sources simultaneously with crystal clear sound quality.",
+                price: 149.99,
+                category: "Microphones",
+                stock: 18,
+                image: "https://placehold.co/600x400?text=Lavalier+Mic",
+                features: [
+                    "Dual-channel system",
+                    "Omnidirectional pattern",
+                    "Up to 100m range",
+                    "LCD display on receiver",
+                    "Belt clips for transmitters",
+                    "Both 3.5mm and XLR outputs"
+                ],
+                specifications: {
+                    "Frequency Range": "570-590MHz",
+                    "Channels": "2",
+                    "Frequency Response": "50Hz - 18kHz",
+                    "Signal-to-Noise Ratio": ">70dB",
+                    "Battery": "2 × AA batteries per transmitter",
+                    "Operating Time": "6-8 hours",
+                    "Dimensions (Receiver)": "180mm × 120mm × 40mm",
+                    "Weight (System)": "350g"
+                },
+                relatedProducts: [1, 5, 2]
+            },
+            {
+                id: 7,
+                name: "Digital Audio Mixer DM-800",
+                description: "8-channel digital mixer with USB connectivity and built-in effects. Perfect for small live performances, podcasting, and studio recording. Features intuitive controls and comprehensive routing options.",
+                price: 599.99,
+                category: "Accessories",
+                stock: 5,
+                image: "https://placehold.co/600x400?text=Audio+Mixer",
+                features: [
+                    "8 input channels",
+                    "4 mic preamps with phantom power",
+                    "24-bit/96kHz audio quality",
+                    "USB audio interface",
+                    "20 built-in effects",
+                    "3-band EQ per channel"
+                ],
+                specifications: {
+                    "Channels": "8 (4 mic/line, 4 line)",
+                    "Mic Preamps": "4 × XMAX preamps",
+                    "Phantom Power": "+48V",
+                    "A/D/A Converters": "24-bit/96kHz",
+                    "Effects": "20 presets",
+                    "Connectivity": "XLR, 1/4\", USB-B",
+                    "Dimensions": "320mm × 350mm × 70mm",
+                    "Weight": "3.2kg"
+                },
+                relatedProducts: [1, 3, 8]
+            },
+            {
+                id: 8,
+                name: "Professional XLR Cable Set",
+                description: "Set of 5 high-quality XLR cables in various lengths (1m, 2m, 3m, 5m, 10m). Gold-plated connectors and oxygen-free copper ensure optimal signal transfer with minimal noise and interference.",
+                price: 89.99,
+                category: "Cables",
+                stock: 40,
+                image: "https://placehold.co/600x400?text=XLR+Cables",
+                features: [
+                    "Set of 5 cables in different lengths",
+                    "Gold-plated connectors",
+                    "Oxygen-free copper",
+                    "Braided shielding",
+                    "Color-coded lengths",
+                    "Carrying case included"
+                ],
+                specifications: {
+                    "Cable Type": "Balanced XLR",
+                    "Conductor": "24 AWG oxygen-free copper",
+                    "Connector": "Gold-plated XLR3M to XLR3F",
+                    "Shielding": "95% copper braided",
+                    "Lengths Included": "1m, 2m, 3m, 5m, 10m",
+                    "Outer Diameter": "6mm",
+                    "Resistance": "<8.5 ohms/100m",
+                    "Weight": "650g (full set)"
+                },
+                relatedProducts: [1, 2, 7]
+            }
+        ];
+        
+        // Load product detail
+        function loadProductDetail(productId) {
+            const product = productsData.find(p => p.id === productId) || productsData[0];
+            
+            // Update page title
+            document.title = `${product.name} - Radio Equipment Sales Dashboard`;
+            
+            // Update product details
+            document.getElementById('productTitle').textContent = product.name;
+            document.getElementById('productImage').src = product.image;
+            document.getElementById('productImage').alt = product.name;
+            document.getElementById('productCategory').textContent = product.category;
+            document.getElementById('productDescription').textContent = product.description;
+            document.getElementById('productPrice').textContent = `$${product.price.toFixed(2)}`;
+            document.getElementById('productStock').textContent = `${product.stock} in stock`;
+            
+            // Update features list
+            const featuresList = document.getElementById('featuresList');
+            featuresList.innerHTML = '';
+            product.features.forEach(feature => {
+                const li = document.createElement('li');
+                li.textContent = feature;
+                featuresList.appendChild(li);
+            });
+            
+            // Update specifications table
+            const specTable = document.getElementById('specificationsTable');
+            specTable.innerHTML = '';
+            for (const [key, value] of Object.entries(product.specifications)) {
+                const row = document.createElement('tr');
+                
+                const keyCell = document.createElement('td');
+                keyCell.textContent = key;
+                
+                const valueCell = document.createElement('td');
+                valueCell.textContent = value;
+                
+                row.appendChild(keyCell);
+                row.appendChild(valueCell);
+                specTable.appendChild(row);
+            }
+            
+            // Update related products
+            const relatedContainer = document.getElementById('relatedProducts');
+            relatedContainer.innerHTML = '';
+            
+            product.relatedProducts.forEach(relatedId => {
+                const relatedProduct = productsData.find(p => p.id === relatedId);
+                if (relatedProduct) {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'related-product-card';
+                    
+                    productCard.innerHTML = `
+                        <div class="product-image">
+                            <img src="${relatedProduct.image}" alt="${relatedProduct.name}">
+                            <span class="product-category">${relatedProduct.category}</span>
+                        </div>
+                        <div class="product-info">
+                            <h3>${relatedProduct.name}</h3>
+                            <div class="product-price">$${relatedProduct.price.toFixed(2)}</div>
+                            <a href="product-detail.html?id=${relatedProduct.id}" class="view-product-btn">View Details</a>
+                        </div>
+                    `;
+                    
+                    relatedContainer.appendChild(productCard);
+                }
+            });
+        }
+        
+        // Add to cart functionality
+        function addToCart(productId, quantity) {
+            quantity = parseInt(quantity) || 1;
+            if (quantity < 1) quantity = 1;
+            
+            const product = productsData.find(p => p.id === productId);
+            if (product) {
+                alert(`Added ${quantity} ${product.name} to your cart!`);
+                // In a real app, this would add the product to a cart system
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <img src="logo.svg" alt="Logo">
+                <h1>QUANTUM</h1>
+            </div>
+            <div class="menu-section">
+                <h3>MAIN</h3>
+                <ul class="menu">
+                    <li><a href="index.html"><span class="icon">📊</span> Dashboard</a></li>
+                    <li><a href="#"><span class="icon">📈</span> Statistics</a></li>
+                    <li><a href="#"><span class="icon">🔒</span> Access Control</a></li>
+                    <li><a href="#"><span class="icon">💬</span> Chat</a></li>
+                    <li><a href="users.html"><span class="icon">👥</span> User Management</a></li>
+                </ul>
+            </div>
+            <div class="menu-section">
+                <h3>EQUIPMENT DATA</h3>
+                <ul class="menu">
+                    <li><a href="#"><span class="icon">📋</span> Inventory</a></li>
+                    <li class="active"><a href="products.html"><span class="icon">🎛️</span> Products</a></li>
+                    <li><a href="#"><span class="icon">🎵</span> Microphones</a></li>
+                    <li><a href="#"><span class="icon">📻</span> Transmitters</a></li>
+                    <li><a href="#"><span class="icon">🎧</span> Headphones</a></li>
+                    <li><a href="#"><span class="icon">🔊</span> Speakers</a></li>
+                </ul>
+            </div>
+            <div class="menu-section">
+                <h3>SALES DATA</h3>
+                <ul class="menu">
+                    <li><a href="#"><span class="icon">💰</span> Transactions</a></li>
+                    <li><a href="#"><span class="icon">🧾</span> Invoices</a></li>
+                    <li><a href="#"><span class="icon">👥</span> Customers</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="breadcrumbs">
+                    <a href="index.html">Dashboard</a> &gt;
+                    <a href="products.html">Products</a> &gt;
+                    <span id="productTitle">Product Name</span>
+                </div>
+                <div class="user-info">
+                    <span class="lang">🇺🇸 English</span>
+                    <span class="user-name">Admin User</span>
+                    <button class="website-btn">Website</button>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            
+            <div class="product-detail-container">
+                <div class="product-detail-left">
+                    <div class="product-detail-image">
+                        <img id="productImage" src="" alt="Product Image">
+                        <span id="productCategory" class="product-category">Category</span>
+                    </div>
+                </div>
+                <div class="product-detail-right">
+                    <h1 id="productTitle">Product Name</h1>
+                    <p id="productDescription" class="product-description">Product description goes here.</p>
+                    
+                    <div class="product-detail-price-row">
+                        <div id="productPrice" class="product-price">$0.00</div>
+                        <div id="productStock" class="product-stock">0 in stock</div>
+                    </div>
+                    
+                    <div class="quantity-container">
+                        <label for="quantity">Quantity:</label>
+                        <div class="quantity-input">
+                            <button type="button" onclick="this.nextElementSibling.stepDown()">-</button>
+                            <input type="number" id="quantity" min="1" value="1">
+                            <button type="button" onclick="this.previousElementSibling.stepUp()">+</button>
+                        </div>
+                    </div>
+                    
+                    <button class="add-to-cart-btn" onclick="addToCart(1, document.getElementById('quantity').value)">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+            
+            <div class="product-tabs">
+                <div class="tab-header">
+                    <div class="tab-button active" data-tab="features">Features</div>
+                    <div class="tab-button" data-tab="specifications">Specifications</div>
+                    <div class="tab-button" data-tab="related">Related Products</div>
+                </div>
+                
+                <div class="tab-content">
+                    <div id="features" class="tab-pane active">
+                        <h2>Key Features</h2>
+                        <ul id="featuresList" class="features-list">
+                            <!-- Features will be added by JavaScript -->
+                        </ul>
+                    </div>
+                    
+                    <div id="specifications" class="tab-pane">
+                        <h2>Technical Specifications</h2>
+                        <table class="specifications-table">
+                            <tbody id="specificationsTable">
+                                <!-- Specifications will be added by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="related" class="tab-pane">
+                        <h2>Related Products</h2>
+                        <div id="relatedProducts" class="related-products-grid">
+                            <!-- Related products will be added by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and panes
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+                    
+                    // Add active class to current button and pane
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

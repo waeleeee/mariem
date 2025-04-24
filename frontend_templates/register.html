@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Radio Equipment Sales Dashboard</title>
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="register.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <div class="logo">
+                <img src="logo.svg" alt="Quantum Logo">
+                <span>QUANTUM</span>
+                <small>solutions</small>
+            </div>
+            
+            <div class="illustration">
+                <img src="login-illustration.svg" alt="Dashboard Illustration">
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <div class="login-form">
+                <h1>Create your account <span class="wave">✨</span></h1>
+                <p class="subtitle">Join Quantum and start managing your radio equipment</p>
+                
+                <form id="registerForm" class="auth-form" action="http://localhost:3002/api/register" method="POST">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="yourname@example.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-container">
+                            <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6">
+                            <button type="button" id="togglePassword" class="toggle-password">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                    <path fill="none" d="M0 0h24v24H0z"/>
+                                    <path d="M12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9C2.121 6.88 6.608 3 12 3zm0 16c3.691 0 6.915-2.534 7.736-6C18.915 9.534 15.691 7 12 7c-3.691 0-6.915 2.534-7.736 6 .82 3.466 4.045 6 7.736 6zm0-10c2.21 0 4 1.791 4 4s-1.79 4-4 4-4-1.791-4-4 1.79-4 4-4zm0 2c-1.105 0-2 .895-2 2s.895 2 2 2 2-.895 2-2-.895-2-2-2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="password-strength-meter">
+                            <div class="strength-bars">
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                            </div>
+                            <span class="strength-text">Password strength</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="password-container">
+                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required minlength="6">
+                            <button type="button" id="toggleConfirmPassword" class="toggle-password">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                    <path fill="none" d="M0 0h24v24H0z"/>
+                                    <path d="M12 3c5.392 0 9.878 3.88 10.819 9-.94 5.12-5.427 9-10.819 9-5.392 0-9.878-3.88-10.819-9C2.121 6.88 6.608 3 12 3zm0 16c3.691 0 6.915-2.534 7.736-6C18.915 9.534 15.691 7 12 7c-3.691 0-6.915 2.534-7.736 6 .82 3.466 4.045 6 7.736 6zm0-10c2.21 0 4 1.791 4 4s-1.79 4-4 4-4-1.791-4-4 1.79-4 4-4zm0 2c-1.105 0-2 .895-2 2s.895 2 2 2 2-.895 2-2-.895-2-2-2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group remember-me">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="termsAgreement" name="termsAgreement" required>
+                            <span class="checkmark"></span>
+                            I agree to the <a href="#" class="terms-link">Terms of Service</a> and <a href="#" class="terms-link">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="sign-in-btn">Create Account</button>
+                    
+                    <div class="alternative">
+                        <span>Already have an account?</span>
+                        <a href="login.html" class="home-btn">Sign In</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="register.js"></script>
+</body>
+</html> 

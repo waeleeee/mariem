@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Radio Equipment Sales Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="users.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-config.js"></script>
+    
+    <script>
+        // Check if user is logged in and is admin
+        document.addEventListener('DOMContentLoaded', function() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (!user) {
+                    window.location.href = 'login.html';
+                } else {
+                    // Check if user is admin
+                    firebase.database().ref('users/' + user.uid).once('value')
+                        .then((snapshot) => {
+                            const userData = snapshot.val();
+                            if (!userData || userData.role !== 'admin') {
+                                alert('Access denied. Admin privileges required.');
+                                window.location.href = 'index.html';
+                            }
+                        });
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <img src="logo.svg" alt="Logo">
+                <h1>QUANTUM</h1>
+            </div>
+            <div class="menu-section">
+                <h3>MAIN</h3>
+                <ul class="menu">
+                    <li><a href="index.html"><span class="icon">📊</span> Dashboard</a></li>
+                    <li><a href="#"><span class="icon">📈</span> Statistics</a></li>
+                    <li><a href="#"><span class="icon">🔒</span> Access Control</a></li>
+                    <li class="active"><a href="users.html"><span class="icon">👥</span> User Management</a></li>
+                </ul>
+            </div>
+            <div class="menu-section">
+                <h3>EQUIPMENT DATA</h3>
+                <ul class="menu">
+                    <li><a href="#"><span class="icon">📋</span> Inventory</a></li>
+                    <li><a href="#"><span class="icon">🎵</span> Microphones</a></li>
+                    <li><a href="#"><span class="icon">📻</span> Transmitters</a></li>
+                    <li><a href="#"><span class="icon">🎧</span> Headphones</a></li>
+                    <li><a href="#"><span class="icon">🔊</span> Speakers</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="theme-toggle">
+                    <span class="icon">🌙</span>
+                </div>
+                <div class="user-info">
+                    <span class="lang">🇺🇸 English</span>
+                    <span class="user-name">Admin User</span>
+                    <button class="website-btn">Website</button>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            
+            <div class="users-panel">
+                <div class="panel-header">
+                    <h1>User Management</h1>
+                    <button id="addUserBtn" class="add-user-btn">Add User</button>
+                </div>
+                
+                <div class="users-table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Created At</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- User rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Add User Modal -->
+            <div id="addUserModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Add New User</h2>
+                        <span class="close">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addUserForm">
+                            <div class="form-group">
+                                <label for="newUserName">Name</label>
+                                <input type="text" id="newUserName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newUserEmail">Email</label>
+                                <input type="email" id="newUserEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newUserPassword">Password</label>
+                                <input type="password" id="newUserPassword" required minlength="6">
+                            </div>
+                            <div class="form-group">
+                                <label for="newUserRole">Role</label>
+                                <select id="newUserRole" required>
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="form-buttons">
+                                <button type="button" class="cancel-btn">Cancel</button>
+                                <button type="submit" class="submit-btn">Add User</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Edit User Modal -->
+            <div id="editUserModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Edit User</h2>
+                        <span class="close">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editUserForm">
+                            <input type="hidden" id="editUserId">
+                            <div class="form-group">
+                                <label for="editUserName">Name</label>
+                                <input type="text" id="editUserName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editUserEmail">Email</label>
+                                <input type="email" id="editUserEmail" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="editUserRole">Role</label>
+                                <select id="editUserRole" required>
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editUserPassword">Reset Password (leave empty to keep current)</label>
+                                <input type="password" id="editUserPassword" minlength="6">
+                            </div>
+                            <div class="form-buttons">
+                                <button type="button" class="cancel-btn">Cancel</button>
+                                <button type="submit" class="submit-btn">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="users.js"></script>
+</body>
+</html> 

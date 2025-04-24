@@ -1,0 +1,126 @@
+/* Registration page specific styles */
+
+/* Password strength meter */
+.password-strength-meter {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.strength-bars {
+    display: flex;
+    gap: 4px;
+}
+
+.bar {
+    height: 4px;
+    flex: 1;
+    background-color: var(--border-color);
+    border-radius: 2px;
+    transition: background-color 0.3s ease;
+}
+
+.bar.weak {
+    background-color: #dc3545;
+}
+
+.bar.medium {
+    background-color: #ffc107;
+}
+
+.bar.strong {
+    background-color: #28a745;
+}
+
+.bar.very-strong {
+    background-color: #198754;
+}
+
+.strength-text {
+    font-size: 12px;
+    color: #a0a0a0;
+    margin-top: 4px;
+}
+
+/* Terms links */
+.terms-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.terms-link:hover {
+    color: var(--button-hover);
+    text-decoration: underline;
+}
+
+/* Sparkle animation for the ✨ emoji */
+.wave {
+    display: inline-block;
+    animation: sparkle 1.5s infinite;
+}
+
+@keyframes sparkle {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Make form groups spacing a bit tighter */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.right-panel {
+    padding: 60px 60px;
+}
+
+/* Password match indicator */
+.password-match-indicator {
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+    font-size: 12px;
+}
+
+.password-match-indicator.match {
+    color: #28a745;
+}
+
+.password-match-indicator.mismatch {
+    color: #dc3545;
+}
+
+.password-match-indicator .icon {
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+/* Error message styles */
+.error-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+.error-message.visible {
+    display: block;
+}
+
+/* Form field validation */
+input:invalid:not(:placeholder-shown) {
+    border-color: #dc3545;
+}
+
+input:valid:not(:placeholder-shown) {
+    border-color: #28a745;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .right-panel {
+        padding: 40px 30px;
+    }
+} 
